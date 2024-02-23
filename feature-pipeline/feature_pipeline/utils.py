@@ -15,7 +15,7 @@ def get_logger(name: str) -> logging.Logger:
     Returns: Logger.
 
     """
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     return logging.getLogger(name)
 
 

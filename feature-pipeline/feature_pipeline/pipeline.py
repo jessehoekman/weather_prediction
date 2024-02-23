@@ -7,7 +7,7 @@ logger = utils.get_logger(__name__)
 
 
 def run(
-    feature_group_version: int = 1,
+    feature_group_version: int = 2,
 ) -> dict:
     """Extract data from the API.
 
@@ -54,6 +54,13 @@ def run(
     return metadata
 
 
-def transform(data: pd.DataFrame) -> pd.DataFrame:
+def transform(df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper containing all the transformations from the ETL pipeline."""
-    return clean.cast_columns(data)
+    data = df.copy()
+    data = clean.cast_columns(data)
+    data = clean.rename_columns(data)
+    data = clean.sort_columns(data)
+
+    return data
+
+run()
