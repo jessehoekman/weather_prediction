@@ -23,9 +23,9 @@ def to_feature_store(
 
     # Create feature group.
     weather_feature_group = feature_store.get_or_create_feature_group(
-        name="weather_forecast",
+        name="weather_prediction",
         version=feature_group_version,
-        description="Temperature and rain forecast for Utrecht, The Netherlands. Data is uploaded with a 5 days delay.",
+        description="Temperature and rain prediction for Utrecht, The Netherlands. Data is uploaded with a 5 days delay.",
         primary_key=["city"],
         event_time="time",
         online_enabled=False,
@@ -43,6 +43,13 @@ def to_feature_store(
     # Add feature descriptions.
     feature_descriptions = [
         {
+            "name": "city",
+            "description": """
+                            Location of city of weather measurements.
+                            """,
+            "validation_rules": "String, lowercase, e.g. 'utrecht'.",
+        },
+        {
             "name": "time",
             "description": """
                             Datetime interval when the data was observed.
@@ -50,19 +57,19 @@ def to_feature_store(
             "validation_rules": "Always full hours, i.e. minutes are 00",
         },
         {
-            "name": "temperature_2m",
+            "name": "temperature",
             "description": "avg temperature in Celcius per hour.",
             "validation_rules": ">=-300 (int)",
         },
         {
-            "name": "rain",
+            "name": "rainfall",
             "description": "Total rainfall in millimeters per hour.",
             "validation_rules": ">=0 (int)",
         },
     ]
     for description in feature_descriptions:
         weather_feature_group.update_feature_description(
-            description["name"], description["description"]
+            description["name"], description["description"],
         )
 
     # Update statistics.
