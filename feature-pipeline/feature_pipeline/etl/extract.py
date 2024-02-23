@@ -7,7 +7,7 @@ import requests
 
 from yarl import URL
 
-from feature_pipeline import utils, settings
+from feature_pipeline import utils
 
 logger = utils.get_logger(__name__)
 
@@ -16,6 +16,7 @@ def from_api(
     export_end_reference_datetime: Optional[datetime.datetime] = None,
     days_delay: int = 5,
     days_export: int = 30,
+    weather_variables: str = "temperature_2m,rain",
     url: str = "https://archive-api.open-meteo.com/v1/archive?",
 ) -> Optional[Tuple[pd.DataFrame, Dict[str, Any]]]:
     """
@@ -51,7 +52,8 @@ def from_api(
         "longitude": "5.1222",        
         "start_date": export_start.strftime("%Y-%m-%d"),
         "end_date": export_end.strftime("%Y-%m-%d"),
-        "timezone": "Europe%2FLondon",
+        "hourly": weather_variables,
+        "timezone": "Europe/London",
     }
     url = URL(url) % query_params
     url = str(url)
@@ -73,7 +75,7 @@ def from_api(
     records = pd.DataFrame.from_records(records)
 
     # Prepare metadata.
-    datetime_format = "%Y-%m-%d"
+    datetime_format = "%Y-%m-%dT%H:%M:%SZ"
 
     metadata = {
         "days_delay": days_delay,
@@ -85,3 +87,5 @@ def from_api(
     }
 
     return records, metadata
+
+print(from_api())
