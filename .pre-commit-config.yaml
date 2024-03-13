@@ -15,7 +15,7 @@ repos:
           - --select
           - ALL
           - --ignore
-          - E501,D401,D417
+          - E501,D401,D417,D100,G004,FA100,D104,ANN401
       - id: ruff-format
 
   - repo: https://github.com/pre-commit/mirrors-mypy

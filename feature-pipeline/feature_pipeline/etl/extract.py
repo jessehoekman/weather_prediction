@@ -1,6 +1,6 @@
 import datetime
 from json import JSONDecodeError
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple
 
 import pandas as pd
 import requests
@@ -15,20 +15,25 @@ def from_api(
     days_delay: int = 5,
     days_export: int = 2,
     weather_variables: str = "temperature_2m,rain",
-) -> Optional[Tuple[pd.DataFrame, Dict[str, Any]]]:
-    """Args:
+) -> Tuple[pd.DataFrame, Dict[str, Any]]:
+    """Function to extract data from the Open-Meteo API.
+
+    Args:
+    ----
         days_delay: Data has a delay of N days. Thus, we have to shift our window with N days.
         days_export: The number of days to export.
         url: The URL of the API.
 
-    Returns
+    Returns:
     -------
           A tuple of a Pandas DataFrame containing the exported data and a dictionary of metadata.
 
     """
     # Compute the export window.
-    export_end = datetime.datetime.utcnow() - datetime.timedelta(days=days_delay)
-    export_start = export_end - datetime.timedelta(days_export)
+    export_end = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
+        days=days_delay,
+    )
+    export_start = export_end - datetime.timedelta(days=days_export)
 
     # Define cities and their coordinates
     cities = {
@@ -41,7 +46,7 @@ def from_api(
 
     # Iterate over cities to perform queries
     for city, coords in cities.items():
-        url = "https://archive-api.open-meteo.com/v1/archive?"
+        base_url = "https://archive-api.open-meteo.com/v1/archive?"
 
         query_params = {
             "latitude": coords["latitude"],
@@ -54,13 +59,13 @@ def from_api(
 
         # Construct URL with query parameters
         url = URL(
-            f"{url}latitude={query_params['latitude']}&longitude={query_params['longitude']}&start_date={query_params['start_date']}&end_date={query_params['end_date']}&hourly={query_params['hourly']}&timezone={query_params['timezone']}",
+            f"{base_url}latitude={query_params['latitude']}&longitude={query_params['longitude']}&start_date={query_params['start_date']}&end_date={query_params['end_date']}&hourly={query_params['hourly']}&timezone={query_params['timezone']}",
         )
-        url = str(url)
-        logger.info(f"Requesting data from API for {city} with URL: {url}")
+        url_str = str(url)
+        logger.info(f"Requesting data from API for {city} with URL: {url_str}")
 
-        # Make API request
-        response = requests.get(url)
+        # Make API request with timeout
+        response = requests.get(url_str, timeout=10)
         logger.info(
             f"Response received from API for {city} with status code: {response.status_code}",
         )
@@ -98,6 +103,3 @@ def from_api(
     }
 
     return records, metadata
-
-
-from_api()
