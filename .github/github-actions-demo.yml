@@ -12,22 +12,25 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      # Repeat these steps for each folder with a pyproject.toml
-      - name: Install dependencies and run checks in training-pipeline
+      - name: Install global dependencies with Poetry
+        run: poetry install
+
+      - name: Run Ruff and Mypy across the entire project
+        run: |
+          poetry run ruff check
+          poetry run mypy .
+
+      - name: Setup and check training-pipeline
         run: |
           cd training-pipeline
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
           poetry install
-          poetry run ruff check
-          poetry run mypy .
 
-      - name: Install dependencies and run checks in feature-pipeline
+      - name: Setup and check feature-pipeline
         run: |
           cd feature-pipeline
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
           poetry install
-          poetry run ruff check
-          poetry run mypy .
