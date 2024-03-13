@@ -18,7 +18,7 @@ warn_unused_configs = true
 
 [tool.ruff]
 select = ["ALL"]
-ignore = ["E501", "D401", "D417", "D100", "G004" ,"FA100", "D104"]
+ignore = ["E501", "D401", "D417", "D100", "G004" ,"FA100", "D104", "ANN401"]
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.6.2"

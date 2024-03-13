@@ -1,4 +1,4 @@
-import pandas as pd  # noqa: D100
+import pandas as pd
 
 from feature_pipeline import utils
 from feature_pipeline.etl import clean, extract, load, validation
@@ -59,8 +59,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
     data = df.copy()
     data = clean.cast_columns(data)
     data = clean.rename_columns(data)
-    data = clean.sort_columns(data)
+    return clean.sort_columns(data)
 
-    return data
 
 run()
