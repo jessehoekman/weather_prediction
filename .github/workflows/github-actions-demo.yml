@@ -17,9 +17,10 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Install global dependencies with Poetry
+      - name: Install global dependencies with Poetry & run Ruff globally
         run: |
           poetry install
+          poetry run ruff check
 
       - name: Lock dependencies for training-pipeline
         run: |
@@ -31,6 +32,7 @@ jobs:
           cd training-pipeline
           poetry install
           poetry run mypy .
+          poetry run mypy . --install-types --non-interactive
 
       - name: Lock dependencies for feature-pipeline
         run: |
@@ -42,3 +44,4 @@ jobs:
           cd feature-pipeline
           poetry install
           poetry run mypy .
+          poetry run mypy . --install-types --non-interactive
