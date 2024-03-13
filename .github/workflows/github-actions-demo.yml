@@ -1,0 +1,24 @@
+name: CI Workflow
+on:
+  push:
+  pull_request:
+
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install global dependencies with Poetry & run Ruff globally
+        run: |
+          poetry install
+          poetry run ruff check
+          poetry run mypy .

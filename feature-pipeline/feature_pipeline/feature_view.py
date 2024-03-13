@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from datetime import datetime
+from typing import TYPE_CHECKING
 
 import fire
 import hopsworks
 import hsfs
 
 from feature_pipeline import settings, utils
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 logger = utils.get_logger(__name__)
 
@@ -41,16 +44,18 @@ def create(
         feature_pipeline_metadata = utils.load_json("feature_pipeline_metadata.json")
         feature_group_version = feature_pipeline_metadata["feature_group_version"]
 
+    from datetime import datetime, timezone  # Import the timezone module from datetime.
+
     if start_datetime is None or end_datetime is None:
         feature_pipeline_metadata = utils.load_json("feature_pipeline_metadata.json")
         start_datetime = datetime.strptime(
             feature_pipeline_metadata["export_datetime_utc_start"],
             feature_pipeline_metadata["datetime_format"],
-        )
+        ).replace(tzinfo=timezone.utc)
         end_datetime = datetime.strptime(
             feature_pipeline_metadata["export_datetime_utc_end"],
             feature_pipeline_metadata["datetime_format"],
-        )
+        ).replace(tzinfo=timezone.utc)
 
     project = hopsworks.login(
         api_key_value=settings.SETTINGS["FS_API_KEY"],
@@ -71,20 +76,21 @@ def create(
         try:
             feature_view.delete_all_training_datasets()
         except hsfs.client.exceptions.RestAPIError:
-            logger.error(
-                f"Failed to delete training datasets for feature view {feature_view.name} with version {feature_view.version}."
+            logger.exception(
+                f"Failed to delete training datasets for feature view {feature_view.name} with version {feature_view.version}.",
             )
 
         try:
             feature_view.delete()
         except hsfs.client.exceptions.RestAPIError:
-            logger.error(
-                f"Failed to delete feature view {feature_view.name} with version {feature_view.version}."
+            logger.exception(
+                f"Failed to delete feature view {feature_view.name} with version {feature_view.version}.",
             )
 
     # Create feature view in the given feature group version.
     energy_consumption_fg = fs.get_feature_group(
-        "weather_prediction", version=feature_group_version,
+        "weather_prediction",
+        version=feature_group_version,
     )
     ds_query = energy_consumption_fg.select_all()
     feature_view = fs.create_feature_view(
@@ -96,7 +102,7 @@ def create(
 
     # Create training dataset.
     logger.info(
-        f"Creating training dataset between {start_datetime} and {end_datetime}."
+        f"Creating training dataset between {start_datetime} and {end_datetime}.",
     )
     feature_view.create_training_data(
         description="Weather prediction training dataset",

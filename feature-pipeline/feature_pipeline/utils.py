@@ -1,6 +1,7 @@
 import json
 import logging
 from pathlib import Path
+from typing import Any, Union
 
 from feature_pipeline import settings
 
@@ -19,8 +20,11 @@ def get_logger(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
 
-
-def save_json(data: dict, file_name: str, save_dir: str = settings.OUTPUT_DIR) -> None:
+def save_json(
+    data: dict,
+    file_name: str,
+    save_dir: Union[Path, str] = settings.OUTPUT_DIR,
+) -> None:
     """Save a dictionary as a JSON file.
 
     Args:
@@ -37,7 +41,7 @@ def save_json(data: dict, file_name: str, save_dir: str = settings.OUTPUT_DIR) -
         json.dump(data, f)
 
 
-def load_json(file_name: str, save_dir: str = settings.OUTPUT_DIR) -> dict:
+def load_json(file_name: str, save_dir: Union[Path, str] = settings.OUTPUT_DIR) -> Any:
     """Load a JSON file.
 
     Args:
@@ -50,7 +54,8 @@ def load_json(file_name: str, save_dir: str = settings.OUTPUT_DIR) -> dict:
     """
     data_path = Path(save_dir) / file_name
     if not data_path.exists():
-        raise FileNotFoundError(f"Cached JSON from {data_path} does not exist.")
+        msg = f"Cached JSON from {data_path} does not exist."
+        raise FileNotFoundError(msg)
 
     with Path.open(data_path) as f:
-        return json.load(f)
+        return json.load(f)  # type: ignore[attr-defined]

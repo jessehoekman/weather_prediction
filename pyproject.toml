@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "weather-prediction"
+version = "0.1.0"
+description = "weather-prediction"
+authors = ["JesseHoekman <jessehoekman@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+ruff = "^0.2.2"
+mypy = "^1.8.0"
+
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disable_error_code = "import-untyped, import-not-found"
+
+[tool.ruff]
+lint.select = ["ALL"]
+lint.ignore = ["E501", "D401", "D417", "D100", "G004" ,"FA100", "D104", "ANN401", "D211", "D213"]
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.6.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
