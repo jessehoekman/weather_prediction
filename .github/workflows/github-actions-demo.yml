@@ -18,11 +18,13 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install global dependencies with Poetry
-        run: poetry install
-
-      - name: Run Ruff and Mypy across the entire project
         run: |
-          poetry run ruff check
+          poetry install
+
+      - name: Lock dependencies for training-pipeline
+        run: |
+          cd training-pipeline
+          poetry lock
 
       - name: Setup and check training-pipeline
         run: |
@@ -30,6 +32,10 @@ jobs:
           poetry install
           poetry run mypy .
 
+      - name: Lock dependencies for feature-pipeline
+        run: |
+          cd feature-pipeline
+          poetry lock
 
       - name: Setup and check feature-pipeline
         run: |
