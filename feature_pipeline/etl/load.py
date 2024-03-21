@@ -17,7 +17,8 @@ def to_feature_store(
     """  # noqa: D205
     # Connect to feature store.
     project = hopsworks.login(
-        api_key_value=SETTINGS["FS_API_KEY"], project="weather_prediction",
+        api_key_value=SETTINGS["FS_API_KEY"],
+        project="weather_prediction",
     )
     feature_store = project.get_feature_store()
 
@@ -69,7 +70,8 @@ def to_feature_store(
     ]
     for description in feature_descriptions:
         weather_feature_group.update_feature_description(
-            description["name"], description["description"],
+            description["name"],
+            description["description"],
         )
 
     # Update statistics.

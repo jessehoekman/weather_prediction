@@ -12,14 +12,14 @@ def cast_columns(df: pd.DataFrame) -> pd.DataFrame:
 
     return data
 
+
 def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Rename columns of the DataFrame."""
     data = df.copy()
     return data.rename(columns={"temperature_2m": "temperature", "rain": "rainfall"})
 
+
 def sort_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Sort the columns of the DataFrame."""
     data = df.copy()
     return data[["city", "time", "temperature", "rainfall"]]
-
-
